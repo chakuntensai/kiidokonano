@@ -49,160 +49,114 @@
 </head>
 <body>
   <h1>🔍 キーどこ？</h1>
-  <p>探したい記号やキーの名前を入力してね（例：「！」「home」「Shift」「スペース」「絵文字」など）：</p>
-  <input type="text" id="search" placeholder="例：？、！”Home”、Caps Lock、絵文字など" />
+  <p>探したい記号やキーの名前を入力してね（例：「！」「home」「Caps Lock」など）：</p>
+  <input type="text" id="search" placeholder="例：？、！”Home”、Caps Lockなど" />
   <div class="result" id="result"></div>
 
   <script>
-    function normalizeInput(str) {
-      return str
-        .toLowerCase()
-        .replace(/\s+/g, "")
-        .replace(/[Ａ-Ｚａ-ｚ０-９]/g, s =>
-          String.fromCharCode(s.charCodeAt(0) - 0xFEE0)
-        );
-    }
-
-    const keyAliases = {
-      "shift": "shift",
-      "しふと": "shift",
-      "capslock": "capslock",
-      "caps lock": "capslock",
-      "きゃぷすろっく": "capslock",
-      "home": "home",
-      "end": "end",
-      "pageup": "pageup",
-      "pagedown": "pagedown",
-      "insert": "insert",
-      "delete": "delete",
-      "space": "space",
-      "すぺーす": "space",
-      "すぺす": "space",
-      "スペース": "space",
-      "えもじ": "emoji",
-      "絵文字": "emoji",
-      "emoji": "emoji",
-    };
-
     const keyMap = {
+      // 記号キー（全角・半角両対応）
+      "!": { key: "1", shift: true },
       "！": { key: "1", shift: true },
+      "?": { key: "/", shift: true },
       "？": { key: "/", shift: true },
-      "、": { key: "ね" },
-      "。": { key: "る" },
-      "「": { key: "れ" },
-      "」": { key: "け" },
+      "、": { key: "ね", shift: false },
+      ",": { key: "ね", shift: false },
+      "，": { key: "ね", shift: false },
+      "。": { key: "る", shift: false },
+      ".": { key: "る", shift: false },
+      "．": { key: "る", shift: false },
+      "/": { key: "め", shift: false },
+      "／": { key: "め", shift: false },
+      "<": { key: "ね", shift: true },
+      "＜": { key: "ね", shift: true },
+      ">": { key: "め", shift: true },
+      "＞": { key: "め", shift: true },
+      ":": { key: "れ", shift: true },
+      "：": { key: "れ", shift: true },
+      ";": { key: "れ", shift: false },
+      "；": { key: "れ", shift: false },
+      "「": { key: "れ", shift: false },
+      "」": { key: "け", shift: false },
+      "@": { key: "2", shift: true },
       "＠": { key: "2", shift: true },
+      "#": { key: "3", shift: true },
       "＃": { key: "3", shift: true },
+      "$": { key: "4", shift: true },
       "＄": { key: "4", shift: true },
+      "%": { key: "5", shift: true },
       "％": { key: "5", shift: true },
+      "^": { key: "6", shift: true },
       "＾": { key: "6", shift: true },
+      "&": { key: "7", shift: true },
       "＆": { key: "7", shift: true },
+      "*": { key: "8", shift: true },
       "＊": { key: "8", shift: true },
+      "(": { key: "9", shift: true },
       "（": { key: "9", shift: true },
+      ")": { key: "0", shift: true },
       "）": { key: "0", shift: true },
+      "\"": { key: "2", shift: true },
       "”": { key: "2", shift: true },
-      '"': { key: "2", shift: true },
-      "'": { key: "7" },
-      "ー": { key: "-" },
-      "＝": { key: "ほ" },
+      "'": { key: "7", shift: false },
+      "ー": { key: "-", shift: false },
+      "＝": { key: "ほ", shift: false },
+      "+": { key: "ほ", shift: true },
       "＋": { key: "ほ", shift: true },
       "〜": { key: "へ", shift: true },
-      ":": { key: "れ", shift: true },
-      "；": { key: "れ" },
       "_": { key: "ろ", shift: true },
-      "\\": { key: "む" },
+      "\\": { key: "む", shift: false },
       "|": { key: "む", shift: true },
-      "[": { key: "「" },
-      "]": { key: "」" },
+      "[": { key: "「", shift: false },
+      "]": { key: "」", shift: false },
       "{": { key: "「", shift: true },
       "}": { key: "」", shift: true },
-      "<": { key: "ね", shift: true },
-      ">": { key: "め", shift: true },
-      "￥": { key: "む" },
-      "・": { key: "め" },
+      "￥": { key: "む", shift: false },
+      "・": { key: "め", shift: false },
 
-      // 追加: シフトキー
-      "shift": {
-        key: "Shift", position: "左下および右下（両方にあります）"
-      },
-
-      "space": {
-        key: "Space", position: "キーボード中央下部（スペースバー）"
-      },
-
-      "capslock": {
-        key: "Caps Lock", position: "左手小指の上あたり"
-      },
-
-      // 機能キー（代替あり）
-      "home": {
-        key: "←", fn: true, position: "右上",
-        alt: { key: "7", fn: true, position: "テンキー上部" }
-      },
-      "end": {
-        key: "→", fn: true, position: "右上",
-        alt: { key: "1", fn: true, position: "テンキー下部" }
-      },
-      "pageup": {
-        key: "↑", fn: true, position: "右上",
-        alt: { key: "9", fn: true, position: "テンキー上部" }
-      },
-      "pagedown": {
-        key: "↓", fn: true, position: "右上",
-        alt: { key: "3", fn: true, position: "テンキー下部" }
-      },
-      "insert": {
-        key: "ろ", fn: true, position: "右上",
-        alt: { key: "0", fn: true, position: "テンキー中央" }
-      },
-      "delete": {
-        key: "Backspace", fn: true, position: "右上"
-      },
-      "無変換": { key: "無変換", position: "スペースバー左" },
-      "変換": { key: "変換", position: "スペースバー右" },
-      "半角/全角": { key: "半角/全角", position: "左上" }
+      // 機能キー + 場所の説明あり
+      "home": { key: "← (またはテンキーの7)", fn: true, location: "右上 or テンキー上部" },
+      "end": { key: "→ (またはテンキーの1)", fn: true, location: "右下 or テンキー下部" },
+      "pageup": { key: "↑ (またはテンキーの9)", fn: true, location: "右上 or テンキー上部" },
+      "pagedown": { key: "↓ (またはテンキーの3)", fn: true, location: "右下 or テンキー下部" },
+      "insert": { key: "ろ", fn: true, location: "右上" },
+      "delete": { key: "Backspace", fn: true, location: "右上" },
+      "caps lock": { key: "Caps Lock", fn: false, location: "左側 Shiftの上" },
+      "shift": { key: "Shift", fn: false, location: "左右下段" },
+      "space": { key: "Space", fn: false, location: "真ん中下" },
+      "スペース": { key: "Space", fn: false, location: "真ん中下" },
+      "無変換": { key: "無変換", fn: false, location: "スペースバー左側" },
+      "変換": { key: "変換", fn: false, location: "スペースバー右側" },
+      "半角/全角": { key: "半角/全角", fn: false, location: "左上 ESCの下" },
     };
 
     const searchInput = document.getElementById("search");
     const result = document.getElementById("result");
 
     searchInput.addEventListener("input", () => {
-      const raw = searchInput.value.trim();
-      const normalized = normalizeInput(raw);
-      const key = keyAliases[normalized] || normalized;
+      const normalizeInput = (text) => {
+        return text
+          .toLowerCase()
+          .replace(/[Ａ-Ｚａ-ｚ０-９]/g, s =>
+            String.fromCharCode(s.charCodeAt(0) - 0xFEE0)
+          )
+          .replace(/[\s\u3000]/g, ' ')
+          .trim();
+      };
 
-      if (key === "emoji") {
-        result.innerHTML = `
-          <div class="key-info">
-            🎉 絵文字を入力するには <span class="key">Windows</span> + <span class="key">.</span> を押してね！
-          </div>
-        `;
-        return;
-      }
-
-      if (keyMap[key]) {
-        const info = keyMap[key];
+      const char = normalizeInput(searchInput.value);
+      if (char in keyMap) {
+        const info = keyMap[char];
         const parts = [];
 
         if (info.shift) parts.push('<span class="key shift">Shift</span>');
         if (info.fn) parts.push('<span class="key fn">Fn</span>');
         parts.push(`<span class="key">${info.key}</span>`);
 
-        const pos = info.position ? `（${info.position}）` : "";
-
-        let altPart = "";
-        if (info.alt) {
-          const a = info.alt;
-          const altKeys = [];
-          if (a.shift) altKeys.push('<span class="key shift">Shift</span>');
-          if (a.fn) altKeys.push('<span class="key fn">Fn</span>');
-          altKeys.push(`<span class="key">${a.key}</span>`);
-          const altPos = a.position ? `（${a.position}）` : "";
-          altPart = `<br>または ${altKeys.join(" + ")} に割り当てられていることがあります。${altPos}`;
-        }
+        const locationText = info.location ? `<div>🧭 おおよその位置: ${info.location}</div>` : "";
 
         result.innerHTML = `
-          <div class="key-info">「${raw}」は ${parts.join(" + ")} のキーにあります。${pos}${altPart}</div>
+          <div class="key-info">「${searchInput.value}」は ${parts.join(" + ")} のキーにあります。${locationText}</div>
         `;
       } else {
         result.innerHTML = "<div class='key-info'>そのキーはまだ登録されていません。</div>";
