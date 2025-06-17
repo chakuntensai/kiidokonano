@@ -35,28 +35,22 @@
       background: #eee;
       border-radius: 4px;
       font-weight: bold;
-      margin-right: 4px;
     }
     .shift {
       background: #ffd;
       border: 1px solid #cc0;
     }
-    .fn {
-      background: #cff;
-      border: 1px solid #09c;
-    }
   </style>
 </head>
 <body>
   <h1>🔍 キーどこ？</h1>
-  <p>探したい記号やキーの名前を入力してね（例：「！」「home」「Caps Lock」など）：</p>
-  <input type="text" id="search" placeholder="例：？、！”Home”、Caps Lockなど" />
+  <p>探したい記号やキー名（例：「！」や「Home」など）を入力してね：</p>
+  <input type="text" id="search" placeholder="例：？、！”、Home、Deleteなど" />
 
   <div class="result" id="result"></div>
 
   <script>
     const keyMap = {
-      // 記号キー
       "！": { key: "1", shift: true },
       "？": { key: "/", shift: true },
       "、": { key: "ね", shift: false },
@@ -79,31 +73,63 @@
       "＝": { key: "ほ", shift: false },
       "＋": { key: "ほ", shift: true },
       "〜": { key: "へ", shift: true },
-      ":": { key: "れ", shift: true },
-      "；": { key: "れ", shift: false },
-      "_": { key: "ろ", shift: true },
-      "\\": { key: "む", shift: false },
-      "|": { key: "む", shift: true },
-      "[": { key: "「", shift: false },
-      "]": { key: "」", shift: false },
-      "{": { key: "「", shift: true },
-      "}": { key: "」", shift: true },
-      "<": { key: "ね", shift: true },
-      ">": { key: "め", shift: true },
-      "￥": { key: "む", shift: false },
-      "・": { key: "め", shift: false },
 
-      // 機能キー（英語名も対応）
-      "home": { key: "←", fn: true },
-      "end": { key: "→", fn: true },
-      "pageup": { key: "↑", fn: true },
-      "pagedown": { key: "↓", fn: true },
-      "insert": { key: "ろ", fn: true },
-      "delete": { key: "Backspace", fn: true },
-      "caps lock": { key: "Caps Lock", fn: false },
-      "無変換": { key: "無変換", fn: false },
-      "変換": { key: "変換", fn: false },
-      "半角/全角": { key: "半角/全角", fn: false },
+      "home": {
+        key: "← または テンキー7",
+        note: "ノートPCでは Fn + ←、テンキーでは NumLockオフ時に7"
+      },
+      "end": {
+        key: "→ または テンキー1",
+        note: "ノートPCでは Fn + →、テンキーでは NumLockオフ時に1"
+      },
+      "page up": {
+        key: "↑ または テンキー9",
+        note: "ノートPCでは Fn + ↑、テンキーでは NumLockオフ時に9"
+      },
+      "page down": {
+        key: "↓ または テンキー3",
+        note: "ノートPCでは Fn + ↓、テンキーでは NumLockオフ時に3"
+      },
+      "insert": {
+        key: "Enter や 0（FnまたはShift同時押し）",
+        note: "機種により異なり、Fn + Enter や Shift + 0 などのことも"
+      },
+      "delete": {
+        key: "Backspace または Del キー",
+        note: "Fn + Backspace の場合もあります"
+      },
+      "caps lock": {
+        key: "Caps Lock",
+        note: "英数・かな切り替えに使います"
+      },
+      "半角": {
+        key: "半角/全角",
+        note: "日本語⇔英語切り替え。Escの左上にあることが多い"
+      },
+      "全角": {
+        key: "半角/全角",
+        note: "同上"
+      },
+      "変換": {
+        key: "変換キー",
+        note: "スペースキーの右隣、漢字変換などに使います"
+      },
+      "無変換": {
+        key: "無変換キー",
+        note: "スペースキーの左隣、変換しない入力に使います"
+      },
+      "emoji": {
+        key: "Windows + .（ドット）",
+        note: "絵文字パネルを表示します（Windows）"
+      },
+      "絵文字": {
+        key: "Windows + .（ドット）",
+        note: "同上"
+      },
+      "windows": {
+        key: "Windowsキー",
+        note: "スタートメニューなど。CtrlとAltの間にあります"
+      }
     };
 
     const searchInput = document.getElementById("search");
@@ -113,17 +139,14 @@
       const char = searchInput.value.trim().toLowerCase();
       if (char in keyMap) {
         const info = keyMap[char];
-        const parts = [];
-
-        if (info.shift) parts.push('<span class="key shift">Shift</span>');
-        if (info.fn) parts.push('<span class="key fn">Fn</span>');
-        parts.push(`<span class="key">${info.key}</span>`);
-
         result.innerHTML = `
-          <div class="key-info">「${searchInput.value}」は ${parts.join(" + ")} のキーにあります。</div>
+          <div class="key-info">
+            「${char}」は <span class="key ${info.shift ? 'shift' : ''}">${info.shift ? 'Shift + ' : ''}${info.key}</span> のキーにあります。
+            ${info.note ? `<br><small>💡 ${info.note}</small>` : ""}
+          </div>
         `;
       } else {
-        result.innerHTML = "<div class='key-info'>そのキーはまだ登録されていません。</div>";
+        result.innerHTML = "<div class='key-info'>その記号やキーはまだ登録されていません。</div>";
       }
     });
   </script>
