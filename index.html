@@ -94,48 +94,33 @@
       "・": { key: "め", shift: false },
 
       // 機能キー（英語名も対応）
-      "home": { key: "←", fn: true, note: "（Fn + ←キーまたはテンキーの7キーにあります）" },
-      "end": { key: "→", fn: true, note: "（Fn + →キーまたはテンキーの1キーにあります）" },
-      "pageup": { key: "↑", fn: true, note: "（Fn + ↑キーまたはテンキーの9キーにあります）" },
-      "pagedown": { key: "↓", fn: true, note: "（Fn + ↓キーまたはテンキーの3キーにあります）" },
-      "insert": { key: "ろ", fn: true, note: "（Fn + ろキーにあります）" },
-      "delete": { key: "Backspace", fn: true, note: "（Fn + Backspaceキーにあります）" },
-      "caps lock": { key: "Caps Lock", fn: false, note: "だいたいキーボードの左側にあります" },
-      "capslock": { key: "Caps Lock", fn: false, note: "だいたいキーボードの左側にあります" },
-      "無変換": { key: "無変換", fn: false, note: "スペースの左あたりにあります" },
-      "変換": { key: "変換", fn: false, note: "スペースの左あたりにあります" },
-      "半角/全角": { key: "半角/全角", fn: false, note: "キーボードの左上にあります" },
-      "windows": { key: "Windows", fn: false, note: "だいたいスペースの左右にあります" },
-      "win": { key: "Windows", fn: false, note: "だいたいスペースの左右にあります" },
-      "emoji": { key: "Windows + .", fn: true, note: "絵文字一覧を開くショートカットです" },
-      "絵文字": { key: "Windows + .", fn: true, note: "絵文字一覧を開くショートカットです" }
+      "home": { key: "←", fn: true },
+      "end": { key: "→", fn: true },
+      "pageup": { key: "↑", fn: true },
+      "pagedown": { key: "↓", fn: true },
+      "insert": { key: "ろ", fn: true },
+      "delete": { key: "Backspace", fn: true },
+      "caps lock": { key: "Caps Lock", fn: false },
+      "無変換": { key: "無変換", fn: false },
+      "変換": { key: "変換", fn: false },
+      "半角/全角": { key: "半角/全角", fn: false },
     };
 
     const searchInput = document.getElementById("search");
     const result = document.getElementById("result");
 
     searchInput.addEventListener("input", () => {
-      const rawInput = searchInput.value.trim();
-      const key = rawInput.toLowerCase();
-
-      let info = null;
-      if (keyMap.hasOwnProperty(rawInput)) {
-        info = keyMap[rawInput];
-      } else if (keyMap.hasOwnProperty(key)) {
-        info = keyMap[key];
-      }
-
-      if (info) {
+      const char = searchInput.value.trim().toLowerCase();
+      if (char in keyMap) {
+        const info = keyMap[char];
         const parts = [];
+
         if (info.shift) parts.push('<span class="key shift">Shift</span>');
         if (info.fn) parts.push('<span class="key fn">Fn</span>');
         parts.push(`<span class="key">${info.key}</span>`);
 
         result.innerHTML = `
-          <div class="key-info">
-            「${rawInput}」は ${parts.join(" + ")} のキーにあります。
-            ${info.note ? <br><small>${info.note}</small> : ""}
-          </div>
+          <div class="key-info">「${searchInput.value}」は ${parts.join(" + ")} のキーにあります。</div>
         `;
       } else {
         result.innerHTML = "<div class='key-info'>そのキーはまだ登録されていません。</div>";
