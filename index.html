@@ -49,7 +49,7 @@
 </head>
 <body>
   <h1>🔍 キーどこ？</h1>
-  <p>探したい記号やキーの名前を入力してね（例：「！」「home」「Caps Lock」など）：</p>
+  <p>探したい記号やキーの名前を入力してね（例：「！」「home」「Caps Lock」「絵文字」など）：</p>
   <input type="text" id="search" placeholder="例：？、！”Home”、Caps Lock、絵文字など" />
   <div class="result" id="result"></div>
 
@@ -64,7 +64,7 @@
     }
 
     const keyMap = {
-      // 記号キー
+      // 記号キー（位置は省略可）
       "！": { key: "1", shift: true },
       "？": { key: "/", shift: true },
       "、": { key: "ね", shift: false },
@@ -101,17 +101,17 @@
       "￥": { key: "む", shift: false },
       "・": { key: "め", shift: false },
 
-      // 機能キー（normalize名で登録）
-      "home": { key: "←", fn: true },
-      "end": { key: "→", fn: true },
-      "pageup": { key: "↑", fn: true },
-      "pagedown": { key: "↓", fn: true },
-      "insert": { key: "ろ", fn: true },
-      "delete": { key: "Backspace", fn: true },
-      "capslock": { key: "Caps Lock", fn: false },
-      "無変換": { key: "無変換", fn: false },
-      "変換": { key: "変換", fn: false },
-      "半角/全角": { key: "半角/全角", fn: false },
+      // 機能キー（英語/日本語）
+      "home":       { key: "←", fn: true, position: "右上" },
+      "end":        { key: "→", fn: true, position: "右上" },
+      "pageup":     { key: "↑", fn: true, position: "右上" },
+      "pagedown":   { key: "↓", fn: true, position: "右上" },
+      "insert":     { key: "ろ", fn: true, position: "右上" },
+      "delete":     { key: "Backspace", fn: true, position: "右上" },
+      "capslock":   { key: "Caps Lock", fn: false, position: "左側" },
+      "無変換":      { key: "無変換", fn: false, position: "スペースバー左" },
+      "変換":        { key: "変換", fn: false, position: "スペースバー右" },
+      "半角/全角":   { key: "半角/全角", fn: false, position: "左上" },
     };
 
     const specialMap = {
@@ -144,8 +144,10 @@
         if (info.fn) parts.push('<span class="key fn">Fn</span>');
         parts.push(`<span class="key">${info.key}</span>`);
 
+        const posText = info.position ? `（${info.position}にあります）` : "";
+
         result.innerHTML = `
-          <div class="key-info">「${raw}」は ${parts.join(" + ")} のキーにあります。</div>
+          <div class="key-info">「${raw}」は ${parts.join(" + ")} のキーにあります。${posText}</div>
         `;
       } else {
         result.innerHTML = "<div class='key-info'>そのキーはまだ登録されていません。</div>";
