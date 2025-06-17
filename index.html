@@ -64,13 +64,12 @@
     }
 
     const keyMap = {
-      // 記号キー（位置は省略可）
       "！": { key: "1", shift: true },
       "？": { key: "/", shift: true },
-      "、": { key: "ね", shift: false },
-      "。": { key: "る", shift: false },
-      "「": { key: "れ", shift: false },
-      "」": { key: "け", shift: false },
+      "、": { key: "ね" },
+      "。": { key: "る" },
+      "「": { key: "れ" },
+      "」": { key: "け" },
       "＠": { key: "2", shift: true },
       "＃": { key: "3", shift: true },
       "＄": { key: "4", shift: true },
@@ -82,36 +81,51 @@
       "）": { key: "0", shift: true },
       "”": { key: "2", shift: true },
       '"': { key: "2", shift: true },
-      "'": { key: "7", shift: false },
-      "ー": { key: "-", shift: false },
-      "＝": { key: "ほ", shift: false },
+      "'": { key: "7" },
+      "ー": { key: "-" },
+      "＝": { key: "ほ" },
       "＋": { key: "ほ", shift: true },
       "〜": { key: "へ", shift: true },
       ":": { key: "れ", shift: true },
-      "；": { key: "れ", shift: false },
+      "；": { key: "れ" },
       "_": { key: "ろ", shift: true },
-      "\\": { key: "む", shift: false },
+      "\\": { key: "む" },
       "|": { key: "む", shift: true },
-      "[": { key: "「", shift: false },
-      "]": { key: "」", shift: false },
+      "[": { key: "「" },
+      "]": { key: "」" },
       "{": { key: "「", shift: true },
       "}": { key: "」", shift: true },
       "<": { key: "ね", shift: true },
       ">": { key: "め", shift: true },
-      "￥": { key: "む", shift: false },
-      "・": { key: "め", shift: false },
+      "￥": { key: "む" },
+      "・": { key: "め" },
 
-      // 機能キー（英語/日本語）
-      "home":       { key: "←", fn: true, position: "右上" },
-      "end":        { key: "→", fn: true, position: "右上" },
-      "pageup":     { key: "↑", fn: true, position: "右上" },
-      "pagedown":   { key: "↓", fn: true, position: "右上" },
-      "insert":     { key: "ろ", fn: true, position: "右上" },
-      "delete":     { key: "Backspace", fn: true, position: "右上" },
-      "capslock":   { key: "Caps Lock", fn: false, position: "左側" },
-      "無変換":      { key: "無変換", fn: false, position: "スペースバー左" },
-      "変換":        { key: "変換", fn: false, position: "スペースバー右" },
-      "半角/全角":   { key: "半角/全角", fn: false, position: "左上" },
+      // 機能キー（代替あり）
+      "home": {
+        key: "←", fn: true, position: "右上",
+        alt: { key: "7", fn: true, position: "テンキー上部" }
+      },
+      "end": {
+        key: "→", fn: true, position: "右上",
+        alt: { key: "1", fn: true, position: "テンキー下部" }
+      },
+      "pageup": {
+        key: "↑", fn: true, position: "右上",
+        alt: { key: "9", fn: true, position: "テンキー上部" }
+      },
+      "pagedown": {
+        key: "↓", fn: true, position: "右上",
+        alt: { key: "3", fn: true, position: "テンキー下部" }
+      },
+      "insert": {
+        key: "ろ", fn: true, position: "右上",
+        alt: { key: "0", fn: true, position: "テンキー中央" }
+      },
+      "delete": { key: "Backspace", fn: true, position: "右上" },
+      "capslock": { key: "Caps Lock", fn: false, position: "左側" },
+      "無変換": { key: "無変換", position: "スペースバー左" },
+      "変換": { key: "変換", position: "スペースバー右" },
+      "半角/全角": { key: "半角/全角", position: "左上" },
     };
 
     const specialMap = {
@@ -144,10 +158,21 @@
         if (info.fn) parts.push('<span class="key fn">Fn</span>');
         parts.push(`<span class="key">${info.key}</span>`);
 
-        const posText = info.position ? `（${info.position}にあります）` : "";
+        const pos = info.position ? `（${info.position}にあります）` : "";
+
+        let altPart = "";
+        if (info.alt) {
+          const a = info.alt;
+          const altKeys = [];
+          if (a.shift) altKeys.push('<span class="key shift">Shift</span>');
+          if (a.fn) altKeys.push('<span class="key fn">Fn</span>');
+          altKeys.push(`<span class="key">${a.key}</span>`);
+          const altPos = a.position ? `（${a.position}）` : "";
+          altPart = `<br>または ${altKeys.join(" + ")} に割り当てられていることがあります。${altPos}`;
+        }
 
         result.innerHTML = `
-          <div class="key-info">「${raw}」は ${parts.join(" + ")} のキーにあります。${posText}</div>
+          <div class="key-info">「${raw}」は ${parts.join(" + ")} のキーにあります。${pos}${altPart}</div>
         `;
       } else {
         result.innerHTML = "<div class='key-info'>そのキーはまだ登録されていません。</div>";
