@@ -40,12 +40,16 @@
       background: #ffd;
       border: 1px solid #cc0;
     }
+    .fn {
+      background: #def;
+      border: 1px solid #09c;
+    }
   </style>
 </head>
 <body>
   <h1>🔍 キーどこ？</h1>
-  <p>探したい記号（例：「！」や「"」など）を入力してね：</p>
-  <input type="text" id="search" placeholder="例：？、！”など" />
+  <p>探したい記号やキー（例：「！」、「Delete」、「PageUp」など）を入力してね：</p>
+  <input type="text" id="search" placeholder="例：？、Delete、”など" />
   <div class="result" id="result"></div>
 
   <script>
@@ -71,7 +75,28 @@
       "ー": { key: "-", shift: false },
       "＝": { key: "ほ", shift: false },
       "＋": { key: "ほ", shift: true },
-      "〜": { key: "へ", shift: true }
+      "〜": { key: "へ", shift: true },
+      ":": { key: "れ", shift: true },
+      "；": { key: "れ", shift: false },
+      "_": { key: "ろ", shift: true },
+      "\\": { key: "む", shift: false },
+      "|": { key: "む", shift: true },
+      "[": { key: "「", shift: false },
+      "]": { key: "」", shift: false },
+      "{": { key: "「", shift: true },
+      "}": { key: "」", shift: true },
+      "<": { key: "ね", shift: true },
+      ">": { key: "め", shift: true },
+      "￥": { key: "む", shift: false },
+      "・": { key: "め", shift: false },
+
+      // 機能キー（多くのノートPCではFnとの組み合わせ）
+      "Delete": { key: "Backspace", fn: true },
+      "PageUp": { key: "↑", fn: true },
+      "PageDown": { key: "↓", fn: true },
+      "Insert": { key: "ろ", fn: true },
+      "Home": { key: "←", fn: true },
+      "End": { key: "→", fn: true }
     };
 
     const searchInput = document.getElementById("search");
@@ -81,11 +106,16 @@
       const char = searchInput.value.trim();
       if (char in keyMap) {
         const info = keyMap[char];
+        let modifiers = [];
+        if (info.shift) modifiers.push('<span class="key shift">Shift</span>');
+        if (info.fn) modifiers.push('<span class="key fn">Fn</span>');
+        modifiers.push(`<span class="key">${info.key}</span>`);
+
         result.innerHTML = `
-          <div class="key-info">「${char}」は <span class="key ${info.shift ? 'shift' : ''}">${info.shift ? 'Shift + ' : ''}${info.key}</span> のキーにあります。</div>
+          <div class="key-info">「${char}」は ${modifiers.join(' + ')} のキーにあります。</div>
         `;
       } else {
-        result.innerHTML = "<div class='key-info'>その記号はまだ登録されていません。</div>";
+        result.innerHTML = "<div class='key-info'>その記号・キーはまだ登録されていません。</div>";
       }
     });
   </script>
